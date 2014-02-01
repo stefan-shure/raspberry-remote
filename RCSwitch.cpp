@@ -294,7 +294,8 @@ char* RCSwitch::getCodeWordC(char sFamily, int nGroup, int nDevice, boolean bSta
  * @param sCodeWord   /^[10FS]*$/  -> see getCodeWord
  */
 void RCSwitch::sendTriState(char* sCodeWord) {
-  for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
+  if (sCodeWord)
+    for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
     int i = 0;
     while (sCodeWord[i] != '\0') {
       switch(sCodeWord[i]) {
