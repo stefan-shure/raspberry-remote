@@ -24,6 +24,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+#include <stdlib.h>
+
 #include "RCSwitch.h"
 
 unsigned long RCSwitch::nReceivedValue = NULL;
@@ -189,11 +191,13 @@ void RCSwitch::switchOff(char* sGroup, int nChannel) {
  */
 char* RCSwitch::getCodeWordB(int nAddressCode, int nChannelCode, boolean bStatus) {
    int nReturnPos = 0;
-   static char sReturn[13];
+   char* sReturn;
+
+   sReturn = (char*) calloc (13, sizeof(char));
 
    const char* code[5] = { "FFFF", "0FFF", "F0FF", "FF0F", "FFF0" };
    if (nAddressCode < 1 || nAddressCode > 4 || nChannelCode < 1 || nChannelCode > 4) {
-    return '\0';
+    goto err;
    }
    for (int i = 0; i<4; i++) {
      sReturn[nReturnPos++] = code[nAddressCode][i];
@@ -213,9 +217,11 @@ char* RCSwitch::getCodeWordB(int nAddressCode, int nChannelCode, boolean bStatus
       sReturn[nReturnPos++] = '0';
    }
 
-   sReturn[nReturnPos] = '\0';
-
    return sReturn;
+
+err:
+   free(sReturn);
+   return NULL;
 }
 
 
@@ -224,12 +230,14 @@ char* RCSwitch::getCodeWordB(int nAddressCode, int nChannelCode, boolean bStatus
  */
 char* RCSwitch::getCodeWordA(char* sGroup, int nChannelCode, boolean bStatus) {
    int nReturnPos = 0;
-   static char sReturn[13];
+   char* sReturn;
+
+   sReturn = (char*) calloc (13, sizeof(char));
 
   const char* code[6] = { "FFFFF", "0FFFF", "F0FFF", "FF0FF", "FFF0F", "FFFF0" };
 
   if (nChannelCode < 1 || nChannelCode > 5) {
-      return '\0';
+    goto err;
   }
 
   for (int i = 0; i<5; i++) {
@@ -238,7 +246,7 @@ char* RCSwitch::getCodeWordA(char* sGroup, int nChannelCode, boolean bStatus) {
     } else if (sGroup[i] == '1') {
       sReturn[nReturnPos++] = '0';
     } else {
-      return '\0';
+      goto err;
     }
   }
 
@@ -253,24 +261,28 @@ char* RCSwitch::getCodeWordA(char* sGroup, int nChannelCode, boolean bStatus) {
     sReturn[nReturnPos++] = 'F';
     sReturn[nReturnPos++] = '0';
   }
-  sReturn[nReturnPos] = '\0';
 
-  return sReturn;
+err:
+  free (sReturn);
+  return NULL;
 }
 
 /**
  * Like getCodeWord (Type C = Intertechno)
  */
 char* RCSwitch::getCodeWordC(char sFamily, int nGroup, int nDevice, boolean bStatus) {
-  static char sReturn[13];
+  char* sReturn;
   int nReturnPos = 0;
+  char* sDeviceGroupCode = NULL;
+  char familycode[16][5] = { "0000", "F000", "0F00", "FF00", "00F0", "F0F0", "0FF0", "FFF0", "000F", "F00F", "0F0F", "FF0F", "00FF", "F0FF", "0FFF", "FFFF" };
+
+  sReturn = (char*) calloc(13, sizeof(char));
 
   if ( (byte)sFamily < 97 || (byte)sFamily > 112 || nGroup < 1 || nGroup > 4 || nDevice < 1 || nDevice > 4) {
-    return '\0';
+    goto err;
   }
 
-  char* sDeviceGroupCode =  dec2binWzerofill(  (nDevice-1) + (nGroup-1)*4, 4  );
-  char familycode[16][5] = { "0000", "F000", "0F00", "FF00", "00F0", "F0F0", "0FF0", "FFF0", "000F", "F00F", "0F0F", "FF0F", "00FF", "F0FF", "0FFF", "FFFF" };
+  sDeviceGroupCode =  dec2binWzerofill(  (nDevice-1) + (nGroup-1)*4, 4  );
   for (int i = 0; i<4; i++) {
     sReturn[nReturnPos++] = familycode[ (int)sFamily - 97 ][i];
   }
@@ -285,8 +297,11 @@ char* RCSwitch::getCodeWordC(char sFamily, int nGroup, int nDevice, boolean bSta
   } else {
     sReturn[nReturnPos++] = '0';
   }
-  sReturn[nReturnPos] = '\0';
   return sReturn;
+
+err:
+  free (sReturn);
+  return NULL;
 }
 
 /**
@@ -297,7 +312,7 @@ void RCSwitch::sendTriState(char* sCodeWord) {
   if (sCodeWord)
     for (int nRepeat=0; nRepeat<nRepeatTransmit; nRepeat++) {
     int i = 0;
-    while (sCodeWord[i] != '\0') {
+    while (sCodeWord[i]) {
       switch(sCodeWord[i]) {
         case '0':
           this->sendT0();
@@ -312,6 +327,7 @@ void RCSwitch::sendTriState(char* sCodeWord) {
       i++;
     }
     this->sendSync();
+    free(sCodeWord);
   }
 }
 
