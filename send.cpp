@@ -47,7 +47,11 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  if (wiringPiSetup () == -1) return 1;
+  if (wiringPiSetup () == -1) {
+    printf ("wiringPiSetup failed\n");
+    goto err;
+  }
+
   piHiPri(20);
   printf("sending systemCode[%s] unitCode[%i] command[%i]\n", systemCode, unitCode, command);
   mySwitch.setPulseLength(300);
