@@ -10,6 +10,7 @@
 
 #define SYSTEM_CODE_LEN 5
 #define PULSE_LENGTH_DEFAULT 300
+#define PIN_DEFAULT 0
 
 int main(int argc, char *argv[]) {
 
@@ -18,17 +19,17 @@ int main(int argc, char *argv[]) {
    * see https://projects.drogon.net/raspberry-pi/wiringpi/pins/
    * for pin mapping of the raspberry pi GPIO connector
    */
-  int PIN = 0;
   char     systemCode[SYSTEM_CODE_LEN + 1];
   int      unitCode;
   int      command;
   int      i;
   int      PLen     = PULSE_LENGTH_DEFAULT;
+  int      Pin      = PIN_DEFAULT;
   RCSwitch mySwitch = RCSwitch();
 
   if (argc <= 3) {
-    printf ("usage: send <systemCode> <unitCode> <command> [<pulse length>]\n");
-      goto err;
+    printf ("usage: send <systemCode> <unitCode> <command> [<pulse length>] [<output pin>]\n");
+    goto err;
   }
 
   if (strlen (argv[1]) != 5) {
@@ -43,6 +44,9 @@ int main(int argc, char *argv[]) {
 
   if (argc > 4)
     PLen = atoi(argv[4]);
+
+  if (argc > 5)
+    Pin = atoi(argv[5]);
 
   /*iterate over systemCode and check whether it is 5 bytes of 0s and 1s */
   for (i = 0; i < SYSTEM_CODE_LEN; i++) {
@@ -60,7 +64,7 @@ int main(int argc, char *argv[]) {
   piHiPri(20);
   printf("sending systemCode[%s] unitCode[%i] command[%i]\n", systemCode, unitCode, command);
   mySwitch.setPulseLength(PLen);
-  mySwitch.enableTransmit(PIN);
+  mySwitch.enableTransmit(Pin);
 
   switch(command) {
     case 0:
