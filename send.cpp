@@ -9,6 +9,7 @@
 #include <string.h>
 
 #define SYSTEM_CODE_LEN 5
+#define PULSE_LENGTH_DEFAULT 300
 
 int main(int argc, char *argv[]) {
 
@@ -22,10 +23,11 @@ int main(int argc, char *argv[]) {
   int      unitCode;
   int      command;
   int      i;
+  int      PLen     = PULSE_LENGTH_DEFAULT;
   RCSwitch mySwitch = RCSwitch();
 
   if (argc <= 3) {
-    printf ("usage: send <systemCode> <unitCode> <command>\n");
+    printf ("usage: send <systemCode> <unitCode> <command> [<pulse length>]\n");
       goto err;
   }
 
@@ -38,6 +40,9 @@ int main(int argc, char *argv[]) {
   strncpy (systemCode, argv[1], SYSTEM_CODE_LEN);
   unitCode   = atoi(argv[2]);
   command    = atoi(argv[3]);
+
+  if (argc > 4)
+    PLen = atoi(argv[4]);
 
   /*iterate over systemCode and check whether it is 5 bytes of 0s and 1s */
   for (i = 0; i < SYSTEM_CODE_LEN; i++) {
@@ -54,7 +59,7 @@ int main(int argc, char *argv[]) {
 
   piHiPri(20);
   printf("sending systemCode[%s] unitCode[%i] command[%i]\n", systemCode, unitCode, command);
-  mySwitch.setPulseLength(300);
+  mySwitch.setPulseLength(PLen);
   mySwitch.enableTransmit(PIN);
 
   switch(command) {
