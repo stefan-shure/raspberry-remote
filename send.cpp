@@ -15,10 +15,24 @@ int main(int argc, char *argv[]) {
    * for pin mapping of the raspberry pi GPIO connector
    */
   int PIN = 0;
-  char*    systemCode = argv[1];
-  int      unitCode   = atoi(argv[2]);
-  int      command    = atoi(argv[3]);
-  RCSwitch mySwitch   = RCSwitch();
+  char*    systemCode;
+  int      unitCode;
+  int      command;
+  RCSwitch mySwitch = RCSwitch();
+
+  if (argc <= 3) {
+    printf ("usage: send <systemCode> <unitCode> <command>\n");
+      goto err;
+  }
+
+  if (sizeof (argv[1]) != 5) {
+    printf ("Systemcode must be 5 bit binary code!\n");
+    goto err;
+  }
+
+  systemCode = argv[1];
+  unitCode   = atoi(argv[2]);
+  command    = atoi(argv[3]);
 
   if (wiringPiSetup () == -1) return 1;
   piHiPri(20);
@@ -46,4 +60,6 @@ int main(int argc, char *argv[]) {
       return -1;
   }
   return 0;
+err:
+  return -1;
 }
