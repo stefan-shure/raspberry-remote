@@ -15,14 +15,14 @@ int main(int argc, char *argv[]) {
    * for pin mapping of the raspberry pi GPIO connector
    */
   int PIN = 0;
-  char* systemCode = argv[1];
-  int unitCode = atoi(argv[2]);
-  int command  = atoi(argv[3]);
+  char*    systemCode = argv[1];
+  int      unitCode   = atoi(argv[2]);
+  int      command    = atoi(argv[3]);
+  RCSwitch mySwitch   = RCSwitch();
 
   if (wiringPiSetup () == -1) return 1;
   piHiPri(20);
   printf("sending systemCode[%s] unitCode[%i] command[%i]\n", systemCode, unitCode, command);
-  RCSwitch mySwitch = RCSwitch();
   mySwitch.setPulseLength(300);
   mySwitch.enableTransmit(PIN);
 
