@@ -48,6 +48,11 @@ int main(int argc, char *argv[]) {
   if (argc > 5)
     Pin = atoi(argv[5]);
 
+  if (unitCode < 1 || unitCode > 4) {
+    printf ("Unit Code must be between 1 and 4\n");
+    goto err;
+  }
+
   /*iterate over systemCode and check whether it is 5 bytes of 0s and 1s */
   for (i = 0; i < SYSTEM_CODE_LEN; i++) {
     if (systemCode[i] != '0' && systemCode[i] != '1') {
