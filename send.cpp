@@ -6,6 +6,9 @@
 #include "RCSwitch.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
+#define SYSTEM_CODE_LEN 5
 
 int main(int argc, char *argv[]) {
 
@@ -15,9 +18,10 @@ int main(int argc, char *argv[]) {
    * for pin mapping of the raspberry pi GPIO connector
    */
   int PIN = 0;
-  char*    systemCode;
+  char     systemCode[SYSTEM_CODE_LEN + 1];
   int      unitCode;
   int      command;
+  int      i;
   RCSwitch mySwitch = RCSwitch();
 
   if (argc <= 3) {
@@ -25,14 +29,23 @@ int main(int argc, char *argv[]) {
       goto err;
   }
 
-  if (sizeof (argv[1]) != 5) {
+  if (strlen (argv[1]) != 5) {
     printf ("Systemcode must be 5 bit binary code!\n");
     goto err;
   }
 
-  systemCode = argv[1];
+  memset (systemCode, 0, SYSTEM_CODE_LEN + 1);
+  strncpy (systemCode, argv[1], SYSTEM_CODE_LEN);
   unitCode   = atoi(argv[2]);
   command    = atoi(argv[3]);
+
+  /*iterate over systemCode and check whether it is 5 bytes of 0s and 1s */
+  for (i = 0; i < SYSTEM_CODE_LEN; i++) {
+    if (systemCode[i] != '0' && systemCode[i] != '1') {
+      printf ("SystemCode must be 5 bit binary code!\n");
+      goto err;
+    }
+  }
 
   if (wiringPiSetup () == -1) return 1;
   piHiPri(20);
