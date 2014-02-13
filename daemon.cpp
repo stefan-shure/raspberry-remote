@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
    * set high priority scheduling
    */
   if (wiringPiSetup () == -1)
-    return 1;
+    error("ERROR setting up wiringPi");
   piHiPri(20);
   mySwitch = RCSwitch();
   mySwitch.setPulseLength(300);
