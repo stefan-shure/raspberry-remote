@@ -13,5 +13,8 @@ daemon: RCSwitch.o daemon.o
 send: RCSwitch.o send.o
 	$(CXX) $+ -o $@ $(CXXFLAGS) $(LDFLAGS)
 
+codesend: RCSwitch.o codesend.o
+	$(CXX) $+ -o $@ $(CXXFLAGS) $(LDFLAGS)
+
 clean:
 	rm -f *.o send daemon
