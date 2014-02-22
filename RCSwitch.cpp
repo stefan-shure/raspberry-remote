@@ -28,7 +28,7 @@
 
 #include "RCSwitch.h"
 
-unsigned long RCSwitch::nReceivedValue = NULL;
+unsigned long RCSwitch::nReceivedValue = 0;
 unsigned int RCSwitch::nReceivedBitlength = 0;
 unsigned int RCSwitch::nReceivedDelay = 0;
 unsigned int RCSwitch::nReceivedProtocol = 0;
@@ -38,9 +38,9 @@ int RCSwitch::nReceiveTolerance = 60;
 RCSwitch::RCSwitch() {
   this->nReceiverInterrupt = -1;
   this->nTransmitterPin = -1;
-  RCSwitch::nReceivedValue = NULL;
+  RCSwitch::nReceivedValue = 0;
   this->setPulseLength(350);
-  this->setRepeatTransmit(10);
+  this->setRepeatTransmit(25);
   this->setReceiveTolerance(60);
   this->setProtocol(1);
 }
@@ -464,8 +464,8 @@ void RCSwitch::enableReceive(int interrupt) {
 
 void RCSwitch::enableReceive() {
   if (this->nReceiverInterrupt != -1) {
-    RCSwitch::nReceivedValue = NULL;
-    RCSwitch::nReceivedBitlength = NULL;
+    RCSwitch::nReceivedValue = 0;
+    RCSwitch::nReceivedBitlength = 0;
   }
 }
 
@@ -477,11 +477,11 @@ void RCSwitch::disableReceive() {
 }
 
 bool RCSwitch::available() {
-  return RCSwitch::nReceivedValue != NULL;
+  return RCSwitch::nReceivedValue != 0;
 }
 
 void RCSwitch::resetAvailable() {
-  RCSwitch::nReceivedValue = NULL;
+  RCSwitch::nReceivedValue = 0;
 }
 
 unsigned long RCSwitch::getReceivedValue() {

@@ -38,7 +38,7 @@ typedef uint8_t boolean;
 typedef uint8_t byte;
 
 #if !defined(NULL)
-    #define NULL 0
+    #define NULL nullptr
 #endif
 #ifdef __cplusplus
 }
